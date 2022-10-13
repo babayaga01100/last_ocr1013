@@ -12,6 +12,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:last_ocr/functions/functions.dart';
+import 'package:last_ocr/page/pregnant_page.dart';
 
 
 late List<String> array = List.filled(35, "",growable: true);
@@ -126,20 +128,9 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
                                 OutlinedButton(
                                   onPressed: () async {
 
-                                    ImageProperties properties = await FlutterNativeImage.getImageProperties(file.path);
+                                    //ImageProperties properties = await FlutterNativeImage.getImageProperties(file.path);
 
                                     //final filename = await submit_uploadimg_front(file);
-
-                                    //서버로 사진 전송
-                                    final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
-                                    final dio = Dio();
-                                    Response response;
-                                    response = await dio.post(api, data: file);
-                                    if(response.statusCode == 200){
-                                      //resultToast('Ocr 임신사 insert success... \n\n');
-                                      array = receiveresult();
-                                      //_showToast(context);
-                                    }
 
                                     Navigator.of(context).popUntil((route) => route.isFirst);
                                     await Navigator.push(context,MaterialPageRoute(builder: (context) =>
@@ -154,31 +145,31 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
                                 ),
                               ],
                             ),
-                            // actions: [
-                            //   OutlinedButton(
-                            //     // onPressed: () => Navigator.of(context).pop(),
-                            //     //
-                            //     //     Navigator.pop(context, file.path);
-                            //       onPressed: () async {
-                            //         final croppedfile = await cropImage(file.path);
-                            //         final filename = await submit_uploadimg_front(croppedfile); // 서버에 저장된 이름을 반환해줌 (이름을 알아야 url로 들어가니까)
-                            //         print(file.path);
-                            //         // final filename = await submit_uploadimg(file.path);
-                            //         // print(filename);
-                            //
-                            //
-                            //
-                            //
-                            //         Navigator.of(context).popUntil((route) => route.isFirst);
-                            //         await Navigator.push(context,MaterialPageRoute(builder: (context) =>
-                            //             ExampleCameraOverlay()),
-                            //         );
-                            //
-                            //
-                            //       },
-                            //       child: const Icon(Icons.edit))
-                            //
-                            // ],
+                            actions: [
+                              OutlinedButton(
+                                // onPressed: () => Navigator.of(context).pop(),
+                                //
+                                //     Navigator.pop(context, file.path);
+                                  onPressed: () async {
+                                    final croppedfile = await cropImage(file.path);
+                                    final filename = await submit_uploadimg_front(croppedfile); // 서버에 저장된 이름을 반환해줌 (이름을 알아야 url로 들어가니까)
+                                    print(file.path);
+                                    // final filename = await submit_uploadimg(file.path);
+                                    // print(filename);
+
+                                    Navigator.of(context).popUntil((route) => route.isFirst);
+                                    await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                        PregnantPage()),
+                                    );
+
+
+                                  },
+                                  child: Container(
+                                  alignment: Alignment.bottomCenter,
+                                  child: const Icon(Icons.edit)
+                                  ),
+                              ),
+                            ],
                             content: SizedBox( // 뒤로가기 버튼 만든 그 페이지 사이즈박스
                                 width: double.infinity,
                                 child: AspectRatio(
@@ -258,7 +249,8 @@ uploadimg_front(String imagePath) async {
           filename: fileName, contentType:MediaType("image","jpg")),
     });
     Response response = await dio.post(
-        'http://211.107.210.141:3000/api/ocrpregnatInsert',
+        // 'http://211.107.210.141:3000/api/ocrpregnatInsert',
+        'http://172.17.53.63:3000/api/ocrImageUpload',
         data:_formData
     );
     print(response);

@@ -577,7 +577,7 @@ class PregnantPageState extends State<PregnantPage>{
 
 sendData(String? ocr_seq, String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
     String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
-  final api ='http://211.107.210.141:3000/api/ocrpregnatUpdate';
+  final api ='http://172.17.53.63:3000/api/ocrpregnatInsert';
   final data = {
     "ocr_seq": ocr_seq,
     "sow_no": sow_no,
