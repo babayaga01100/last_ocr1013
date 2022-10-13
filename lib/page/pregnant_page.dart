@@ -7,11 +7,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:last_ocr/overlay/camera_overlay_pregnant.dart';
 
+import '../functions/functions.dart';
+
 
 class PregnantPage extends StatefulWidget{
   static const routeName = '/OcrPregnantPage';
 
   const PregnantPage({Key? key, this.title}) : super(key: key);
+
+  // const PregnantPage(List submitlist, {Key? key, this.title}) : super(key: key);
 
   final String? title;
 
@@ -63,6 +67,18 @@ class PregnantPageState extends State<PregnantPage>{
   late String expect_month ='';
   late String expect_day ='';
 
+  late String vaccine1_fir ='';
+  late String vaccine1_sec ='';
+
+  late String vaccine2_fir ='';
+  late String vaccine2_sec ='';
+
+  late String vaccine3_fir ='';
+  late String vaccine3_sec ='';
+
+  late String vaccine4_fir ='';
+  late String vaccine4_sec ='';
+
   late String vaccine1 ='';
   late String vaccine2 ='';
   late String vaccine3 ='';
@@ -108,14 +124,14 @@ class PregnantPageState extends State<PregnantPage>{
   Future getImage(ImageSource imageSource) async {
     final image = await picker.pickImage(source: imageSource);
 
-    final temp = await submit_uploadimg_front(image);
+    // final temp = await submit_uploadimg_front(image);
     print("aaaa");
-    print(temp);
+    // print(temp);
 
     setState((){
       _image = File(image!.path); // 가져온 이미지를 _image에 저장
     });
-    return temp;
+    // return temp;
   }
 
   final sowID1_Controller = TextEditingController();
@@ -163,6 +179,51 @@ class PregnantPageState extends State<PregnantPage>{
 
   @override
   Widget build(BuildContext context) {
+    array = receiveresult();
+    sowID1 = array[0];
+    sowID2 = array[1];
+
+    birth_year = array[2];
+    birth_month = array[3];
+    birth_day = array[4];
+
+    adoption_year = array[5];
+    adoption_month = array[6];
+    adoption_day = array[7];
+
+    hormone_year = array[8];
+    hormone_month = array[9];
+    hormone_day = array[10];
+
+    mate_month = array[11];
+    mate_day = array[12];
+
+    boar1ID1 = array[13];
+    boar1ID2 = array[14];
+
+    boar2ID1 = array[15];
+    boar2ID2 = array[16];
+
+    check_month = array[17];
+    check_day = array[18];
+
+    expect_month = array[19];
+    expect_day = array[20];
+
+    vaccine1_fir = array[21];
+    vaccine1_sec = array[22];
+
+    vaccine2_fir = array[23];
+    vaccine2_sec = array[24];
+
+    vaccine3_fir = array[25];
+    vaccine3_sec = array[26];
+
+    vaccine4_fir = array[27];
+    vaccine4_sec = array[28];
+
+    memo = array[29];
+
     return Scaffold(
         appBar: AppBar(
           title: Text("임신사"),
@@ -348,7 +409,7 @@ class PregnantPageState extends State<PregnantPage>{
                         Text('-',style: TextStyle(fontSize: 20))
                       ]),
                       Column(children:[
-                        TextField(controller: boar2ID1_Controller,
+                        TextField(controller: boar2ID2_Controller,
                           decoration: const InputDecoration(hintText: " "),style: TextStyle(fontSize: 20),),
                       ]),
                     ],),
@@ -540,11 +601,11 @@ class PregnantPageState extends State<PregnantPage>{
                     FloatingActionButton(
                       heroTag: 'send_button',
                       child: Icon(Icons.arrow_circle_right_sharp),
-                      tooltip: 'pick Iamge',
+                      tooltip: 'pick Image',
                       onPressed: () async{
                         //_showToast(context);
-                        sowID = sowID1_Controller.text + "," + sowID2_Controller.text;
-                        ocr_seq = sowID1_Controller.text + "," + sowID2_Controller.text;
+                        // sowID = sowID1_Controller.text + "," + sowID2_Controller.text;
+                        // ocr_seq = sowID1_Controller.text + "," + sowID2_Controller.text;
                         sow_no = sowID1_Controller.text + "," + sowID2_Controller.text;
                         sow_birth = birth_year_Controller.text +"," + birth_month_Controller.text + "," + birth_day_Controller.text;
                         sow_buy = adoption_year_Controller.text + "," +  adoption_month_Controller.text + "," + adoption_day_Controller.text;
@@ -562,7 +623,7 @@ class PregnantPageState extends State<PregnantPage>{
                         memo = memo_Controller.text;
 
 
-                        sendData(ocr_seq, sow_no, sow_birth, sow_buy, sow_estrus, sow_cross, boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2, vaccine3, vaccine4, memo);
+                        pregnant_insert(sow_no, sow_birth, sow_buy, sow_estrus, sow_cross, boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2, vaccine3, vaccine4, memo);
 
                       },
                     ),
@@ -575,36 +636,37 @@ class PregnantPageState extends State<PregnantPage>{
   }
 }
 
-sendData(String? ocr_seq, String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
-    String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
-  final api ='http://172.17.53.63:3000/api/ocrpregnatInsert';
-  final data = {
-    "ocr_seq": ocr_seq,
-    "sow_no": sow_no,
-    "sow_birth": sow_birth,
-    "sow_buy":sow_buy,
-    "sow_estrus":sow_estrus,
-    "sow_cross":sow_cross,
-    "boar_fir":boar_fir,
-    "boar_sec":boar_sec,
-    "checkdate":checkdate,
-    "expectdate":expectdate,
-    "vaccine1":vaccine1,
-    "vaccine2":vaccine2,
-    "vaccine3":vaccine3,
-    "vaccine4":vaccine4,
-    // "ocr_imgpath":'17',
-    "memo":memo,
-  };
-  final dio = Dio();
-  Response response;
-  response = await dio.post(api,data: data);
-  if(response.statusCode == 200){
-    //resultToast('Ocr 임신사 update success... \n\n');
-    print('Ocr 임신사 update success... \n\n');
-  }
-  return 0;
-}
+// sendData(String? ocr_seq, String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
+//     String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
+//   // final api ='http://172.17.53.63:3000/api/ocrpregnatInsert';
+//   final api = 'http://211.107.210.141:3000/api/ocrpregnatInsert';
+//   final data = {
+//     "ocr_seq": array[0];
+//     "sow_no": array[0],
+//     "sow_birth": array[0],
+//     "sow_buy": array[0],
+//     "sow_estrus": array[0],
+//     "sow_cross": array[0],
+//     "boar_fir": array[0],
+//     "boar_sec": array[0],
+//     "checkdate": array[0],
+//     "expectdate": array[0],
+//     "vaccine1": array[0],
+//     "vaccine2":vaccine2,
+//     "vaccine3":vaccine3,
+//     "vaccine4":vaccine4,
+//     // "ocr_imgpath":'17',
+//     "memo":memo,
+//   };
+//   final dio = Dio();
+//   Response response;
+//   response = await dio.post(api,data: data);
+//   if(response.statusCode == 200){
+//     //resultToast('Ocr 임신사 update success... \n\n');
+//     print('Ocr 임신사 update success... \n\n');
+//   }
+//   return 0;
+// }
 
 
 // class EmployeeDataSource extends DataGridSource {

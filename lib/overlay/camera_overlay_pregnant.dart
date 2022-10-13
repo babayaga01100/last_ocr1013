@@ -6,14 +6,14 @@ import 'package:camera/camera.dart';
 import 'package:flutter_camera_overlay/flutter_camera_overlay.dart';
 import 'package:flutter_camera_overlay/model.dart';
 import 'package:http_parser/http_parser.dart';
-// import 'package:ocr/pages/navigations/camera_page.dart';
-// import '../pages/navigations/camera_page.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
-import 'package:last_ocr/functions/functions.dart';
-import 'package:last_ocr/page/pregnant_page.dart';
+
+// import '../functions/functions.dart';
+import '../functions/functions.dart';
+import '../page/pregnant_page.dart';
+// import 'package:flutter_native_image/flutter_native_image.dart';
 
 
 late List<String> array = List.filled(35, "",growable: true);
@@ -77,6 +77,7 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
   }
   @override
   Widget build(BuildContext context) {
+
     var media = MediaQuery.of(context);
     var size = media.size;
     double width = media.orientation == Orientation.portrait
@@ -127,14 +128,16 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
                                 ),
                                 OutlinedButton(
                                   onPressed: () async {
-
-                                    //ImageProperties properties = await FlutterNativeImage.getImageProperties(file.path);
-
-                                    //final filename = await submit_uploadimg_front(file);
-
+                                    var filename = file.path.split('/').last;
+                                    print(filename);
+                                    // List submitlist = await submitimg(File(file.path));
+                                    // await getimg("hi.jpg");
+                                    // await downloadFile();
                                     Navigator.of(context).popUntil((route) => route.isFirst);
                                     await Navigator.push(context,MaterialPageRoute(builder: (context) =>
-                                    CameraOverlayPregnant()),
+                                        PregnantPage()),
+                                    // await Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                    // PregnantPage(submitlist)),
                                     );
                                   },
                                   child: Container(
@@ -151,24 +154,19 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
                                 //
                                 //     Navigator.pop(context, file.path);
                                   onPressed: () async {
-                                    final croppedfile = await cropImage(file.path);
-                                    final filename = await submit_uploadimg_front(croppedfile); // 서버에 저장된 이름을 반환해줌 (이름을 알아야 url로 들어가니까)
-                                    print(file.path);
-                                    // final filename = await submit_uploadimg(file.path);
-                                    // print(filename);
+                                    // final croppedfile = await cropImage(file.path);
 
                                     Navigator.of(context).popUntil((route) => route.isFirst);
-                                    await Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                                    await Navigator.push(context,MaterialPageRoute(builder: (context) =>
                                         PregnantPage()),
+                                    // await Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                    // PregnantPage(submitlist)),
                                     );
 
 
                                   },
-                                  child: Container(
-                                  alignment: Alignment.bottomCenter,
-                                  child: const Icon(Icons.edit)
-                                  ),
-                              ),
+                                  child: const Icon(Icons.edit))
+
                             ],
                             content: SizedBox( // 뒤로가기 버튼 만든 그 페이지 사이즈박스
                                 width: double.infinity,
@@ -206,61 +204,60 @@ class CameraOverlayPregnantState extends State<CameraOverlayPregnant> {
         ));
   }
 }
+//
+// submit_uploadimg_front(dynamic file) async {
+//   String filename = "no";
+//   try {
+//     //print("임신사 이미지 전송 함");
+//     Response res = await uploadimg_front(file.path);
+//
+//     switch(res.statusCode){
+//       case 200:
+//         final jsonbody = res.data;       // ex) {"result":[335,"1111-11-11","2022_08_10_14_57_16.jpg"]}
+//         filename = jsonbody['result'][37]; // ex) "2022_08_10_14_57_16.jpg"
+//         array = jsonbody['result'];
+//         print("array is ?");
+//         print(array);
+//         print("임신사 이미지 전송 함");
+//         break;
+//       case 201:
+//         break;
+//       case 202:
+//         break;
+//       default:
+//         break;
+//     }
+//     return filename;
+//   } catch (error) {
+//     print("error");
+//     return filename;
+//   }
+// }
 
-submit_uploadimg_front(dynamic file) async {
-  String filename = "no";
-  try {
-    //print("임신사 이미지 전송 함");
-    Response res = await uploadimg_front(file.path);
-
-    switch(res.statusCode){
-      case 200:
-        final jsonbody = res.data;       // ex) {"result":[335,"1111-11-11","2022_08_10_14_57_16.jpg"]}
-        filename = jsonbody['result'][37]; // ex) "2022_08_10_14_57_16.jpg"
-        array = jsonbody['result'];
-        print("array is ?");
-        print(array);
-        print("임신사 이미지 전송 함");
-        break;
-      case 201:
-        break;
-      case 202:
-        break;
-      default:
-        break;
-    }
-    return filename;
-  } catch (error) {
-    print("error");
-    return filename;
-  }
-}
-
-uploadimg_front(String imagePath) async {
-  Dio dio = new Dio();
-  try {
-    dio.options.contentType = 'multipart/form-data';
-    dio.options.maxRedirects.isFinite;
-    String fileName = imagePath.split('/').last;
-
-    print(fileName);
-    FormData _formData = FormData.fromMap({
-      "Image" : await MultipartFile.fromFile(imagePath,
-          filename: fileName, contentType:MediaType("image","jpg")),
-    });
-    Response response = await dio.post(
-        // 'http://211.107.210.141:3000/api/ocrpregnatInsert',
-        'http://172.17.53.63:3000/api/ocrImageUpload',
-        data:_formData
-    );
-    print(response);
-
-    final jsonBody = response.data;
-    return response;
-  } catch (e) {
-    Exception(e);
-  } finally {
-    dio.close();
-  }
-  // return 0;
-}
+// uploadimg_front(String imagePath) async {
+//   Dio dio = new Dio();
+//   try {
+//     dio.options.contentType = 'multipart/form-data';
+//     dio.options.maxRedirects.isFinite;
+//     String fileName = imagePath.split('/').last;
+//
+//     print(fileName);
+//     FormData _formData = FormData.fromMap({
+//       "Image" : await MultipartFile.fromFile(imagePath,
+//           filename: fileName, contentType:MediaType("image","jpg")),
+//     });
+//     Response response = await dio.post(
+//         'http://211.107.210.141:3000/api/ocrpregnatInsert',
+//         data:_formData
+//     );
+//     print(response);
+//
+//     final jsonBody = response.data;
+//     return response;
+//   } catch (e) {
+//     Exception(e);
+//   } finally {
+//     dio.close();
+//   }
+//   // return 0;
+// }
