@@ -27,6 +27,7 @@ pregnant_getocr() async {
   final api ='http://211.107.210.141:3000/api/getOcr_pregnant';
   final dio = Dio();
   Response response = await dio.get(api);
+
   if(response.statusCode == 200) {
 
     List<dynamic> result = response.data;
@@ -34,19 +35,25 @@ pregnant_getocr() async {
     pregnants.refresh();
     for( int i=0; i<pregnants.length; i++){
       print(" success..."+pregnants[i].ocr_seq.toString()+" "+pregnants[i].sow_no.toString());
+      //sum.add(pregnants[i].ocr_seq.toString());
     }
-  }else{
+    print("결과 길이 : " + pregnants.length.toString());
+  }
+  else{
     print(" fail..."+response.statusCode.toString());
   }
+  return pregnants.toList() ;
 }
 
 //선택한 기록 불러오기
 //사용자 아이디, 모돈 번호를 보내고 그 값을 받아옴
 pregnant_selectrow(int num) async{
+
   final api ='http://211.107.210.141:3000/api/ocr_pregnantSelectedRow';
   final data = {
     "ocr_seq": num, //pk
   };
+
   final dio = Dio();
   Response response;
   response = await dio.post(api,data: data);
@@ -56,6 +63,7 @@ pregnant_selectrow(int num) async{
   }else{
     print(" fail..."+response.statusCode.toString());
   }
+  return response.data;
 }
 
 uploadimg_pregnant(File file)async{

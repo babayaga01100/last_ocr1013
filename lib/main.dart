@@ -1,3 +1,4 @@
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_rx/get_rx.dart';
@@ -5,6 +6,7 @@ import 'package:last_ocr/entities/Ocr_pregnant.dart';
 import 'package:last_ocr/functions/functions.dart';
 import 'package:last_ocr/page/Pregnant_list_page.dart';
 import 'package:last_ocr/page/maternity_graph_page.dart';
+import 'package:last_ocr/page/maternity_modify_page.dart';
 import 'package:last_ocr/page/maternity_page.dart';
 import 'package:last_ocr/page/pregnant_graph_page.dart';
 import 'package:last_ocr/page/pregnant_page.dart';
@@ -70,10 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   OutlinedButton(
                       onPressed: (){
+
+                        // Future<dynamic> list;
+                        // list = pregnant_getocr() as Future;
+                        // pregnant_getocr();
                         //화면전환
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => PregnantListPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => PregnantListPage([])));
                         //서버로부터 값 받아오기
-                        pregnant_getocr();
+                       // pregnant_getocr();
                       },
                       child: const Text('기록')
                   ),
@@ -104,8 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     OutlinedButton(
                         onPressed: (){
-                          // Navigator.push(context, MaterialPageRoute(
-                          //     builder: (context) => PregnantListPage()));
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => PregnantListPage([])));
                         },
                         child: const Text('기록')
                     ),

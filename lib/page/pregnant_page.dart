@@ -9,7 +9,7 @@ import 'package:last_ocr/overlay/camera_overlay_pregnant.dart';
 import 'package:last_ocr/page/Pregnant_list_page.dart';
 import '../functions/functions.dart';
 
-late int ocr_seq;
+// late int ocr_seq;
 late String sow_no;
 late String sow_birth;
 late String sow_buy;
@@ -159,6 +159,7 @@ class PregnantPageState extends State<PregnantPage>{
 
   @override
   Widget build(BuildContext context) {
+
     if(widget.listfromserver_pre.isNotEmpty){
       if (sowID1_Controller.text.isEmpty) {
         print(widget.listfromserver_pre);
@@ -613,12 +614,14 @@ class PregnantPageState extends State<PregnantPage>{
                         vaccine4 = vaccine4_fir_Controller.text + vaccine4_sec_Controller.text;                        // "ocr_imgpath":'17',
                         memo = memo_Controller.text;
 
-                        // sendData(ocr_seq, sow_no, sow_birth, sow_buy, sow_estrus, sow_cross, boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2, vaccine3, vaccine4, memo);
-                        await pregnant_insert();
+                        await pregnant_insert(sow_no, sow_birth, sow_buy, sow_estrus, sow_cross,
+                            boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2,
+                            vaccine3, vaccine4, memo);
+                        // await pregnant_insert();
 
                         Navigator.of(context).popUntil((route) => route.isFirst);
                         await Navigator.push(context,MaterialPageRoute(builder: (context) =>
-                            PregnantListPage()),
+                            PregnantListPage([])),
                         );
                       },
                     ),
@@ -632,7 +635,9 @@ class PregnantPageState extends State<PregnantPage>{
 }
 
 //임신사 사진전송
-pregnant_insert() async {
+pregnant_insert(String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross,
+    String? boar_fir, String? boar_sec, String? checkdate, String? expectdate, String? vaccine1, String? vaccine2,
+    String? vaccine3, String? vaccine4, String? memo) async {
   final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
   final data = {
     // "ocr_seq": ocr_seq,
@@ -656,7 +661,8 @@ pregnant_insert() async {
   final dio = Dio();
   Response response;
   response = await dio.post(api,data: data);
-  if(response.statusCode == 200){
+  // if(response.statusCode == 200){
     resultToast('Ocr 임신사 insert success… \n\n');
-  }
+  // }
+  // return response.data;
 }

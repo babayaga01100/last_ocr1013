@@ -31,7 +31,7 @@ class PregnantGraphPageState extends State<PregnantGraphPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FlatButton.icon(
+              FlatButton.icon( //TextButton하면 오류안남
                   onPressed: () { },
                   icon: Icon(Icons.refresh), label: Text('새로고침')),
               Text("교배",style:TextStyle(fontSize: 20),),
