@@ -7,8 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:last_ocr/functions/functions.dart';
 import 'package:last_ocr/overlay/camera_overlay_maternity.dart';
-import 'package:last_ocr/page/maternity_list_page.dart';
-import 'package:last_ocr/page/maternity_modify_page.dart';
 
 late int ocr_seq;
 late String sow_no;
@@ -30,21 +28,21 @@ late String memo;
 
 late String filename;
 
-class MaternityPage extends StatefulWidget{
+class MaternityModifyPage extends StatefulWidget{
   static const routeName = '/OcrPregnantPage';
 
   // const MaternityPage({Key? key, this.title}) : super(key: key);
 
-  final List listfromserver_mat;
-  const MaternityPage(this.listfromserver_mat);
+  final List listfromserver_mat_mo;
+  const MaternityModifyPage(this.listfromserver_mat_mo);
 
   //final String? title;
 
   @override
-  MaternityPageState createState() => MaternityPageState();
+  MaternityModifyPageState createState() => MaternityModifyPageState();
 }
 
-class MaternityPageState extends State<MaternityPage>{
+class MaternityModifyPageState extends State<MaternityModifyPage>{
 
   File? _image;
   final picker = ImagePicker();
@@ -71,7 +69,6 @@ class MaternityPageState extends State<MaternityPage>{
   late String totalteen;
   late String teenweight;
 
-  late String galleryurl;
 
   Widget showImage() {
 
@@ -89,20 +86,6 @@ class MaternityPageState extends State<MaternityPage>{
             child: Text('No image selected.')));
   }
 
-  // 비동기 처리를 통해 카메라와 갤러리에서 이미지를 가져온다.
-  // 수정필요
-  Future getImage(ImageSource imageSource) async {
-    final image = await picker.pickImage(source: imageSource);
-
-    final temp = await uploadimg_maternity(File(image!.path));
-    print("aaaa");
-    print(temp);
-
-    setState((){
-      _image = File(image.path); // 가져온 이미지를 _image에 저장
-    });
-    return temp;
-  }
 
   //모돈번호
   final sowID1_Controller = TextEditingController();
@@ -161,55 +144,55 @@ class MaternityPageState extends State<MaternityPage>{
   @override
   Widget build(BuildContext context) {
 
-    if(widget.listfromserver_mat.isNotEmpty){
+    if(widget.listfromserver_mat_mo.isNotEmpty){
       if(sowID1_Controller.text.isEmpty) {
-        print(widget.listfromserver_mat);
-        sowID1_Controller.text = widget.listfromserver_mat[1][0];
-        sowID2_Controller.text = widget.listfromserver_mat[1][1];
+        print(widget.listfromserver_mat_mo);
+        sowID1_Controller.text = widget.listfromserver_mat_mo[1][0];
+        sowID2_Controller.text = widget.listfromserver_mat_mo[1][1];
         // late String sowID3 ='';
         // late String sowID4 ='';
         // late String sowID5 ='';
 
-        birth_year_Controller.text = widget.listfromserver_mat[1][2];
-        birth_month_Controller.text = widget.listfromserver_mat[1][3];
-        birth_day_Controller.text = widget.listfromserver_mat[1][4];
+        birth_year_Controller.text = widget.listfromserver_mat_mo[1][2];
+        birth_month_Controller.text = widget.listfromserver_mat_mo[1][3];
+        birth_day_Controller.text = widget.listfromserver_mat_mo[1][4];
 
-        adoption_year_Controller.text = widget.listfromserver_mat[1][5];
-        adoption_month_Controller.text = widget.listfromserver_mat[1][6];
-        adoption_day_Controller.text = widget.listfromserver_mat[1][7];
+        adoption_year_Controller.text = widget.listfromserver_mat_mo[1][5];
+        adoption_month_Controller.text = widget.listfromserver_mat_mo[1][6];
+        adoption_day_Controller.text = widget.listfromserver_mat_mo[1][7];
 
-        expect_year_Controller.text = widget.listfromserver_mat[1][8];
-        expect_month_Controller.text = widget.listfromserver_mat[1][8];
-        expect_day_Controller.text = widget.listfromserver_mat[1][9];
+        expect_year_Controller.text = widget.listfromserver_mat_mo[1][8];
+        expect_month_Controller.text = widget.listfromserver_mat_mo[1][8];
+        expect_day_Controller.text = widget.listfromserver_mat_mo[1][9];
 
-        teen_month_Controller.text = widget.listfromserver_mat[1][10];
-        teen_day_Controller.text = widget.listfromserver_mat[1][11];
+        teen_month_Controller.text = widget.listfromserver_mat_mo[1][10];
+        teen_day_Controller.text = widget.listfromserver_mat_mo[1][11];
 
-        givebirth_month_Controller.text = widget.listfromserver_mat[1][12];
-        givebirth_day_Controller.text = widget.listfromserver_mat[1][13];
+        givebirth_month_Controller.text = widget.listfromserver_mat_mo[1][12];
+        givebirth_day_Controller.text = widget.listfromserver_mat_mo[1][13];
 
-        totalbaby_Controller.text = widget.listfromserver_mat[1][14];
-        feedbaby_Controller.text = widget.listfromserver_mat[1][15];
+        totalbaby_Controller.text = widget.listfromserver_mat_mo[1][14];
+        feedbaby_Controller.text = widget.listfromserver_mat_mo[1][15];
 
-        weight_Controller.text = widget.listfromserver_mat[1][16];
-        totalteen_Controller.text = widget.listfromserver_mat[1][17];
-        teenweight_Controller.text = widget.listfromserver_mat[1][18];
+        weight_Controller.text = widget.listfromserver_mat_mo[1][16];
+        totalteen_Controller.text = widget.listfromserver_mat_mo[1][17];
+        teenweight_Controller.text = widget.listfromserver_mat_mo[1][18];
 
-        expect_month_Controller.text = widget.listfromserver_mat[1][19];
-        expect_day_Controller.text = widget.listfromserver_mat[1][20];
+        expect_month_Controller.text = widget.listfromserver_mat_mo[1][19];
+        expect_day_Controller.text = widget.listfromserver_mat_mo[1][20];
 
-        vaccine1_fir_Controller.text = widget.listfromserver_mat[1][21];
-        vaccine1_sec_Controller.text = widget.listfromserver_mat[1][22];
-        vaccine2_fir_Controller.text = widget.listfromserver_mat[1][23];
-        vaccine2_sec_Controller.text = widget.listfromserver_mat[1][24];
-        vaccine3_fir_Controller.text = widget.listfromserver_mat[1][25];
-        vaccine3_sec_Controller.text = widget.listfromserver_mat[1][26];
-        vaccine4_fir_Controller.text = widget.listfromserver_mat[1][27];
-        vaccine4_sec_Controller.text = widget.listfromserver_mat[1][28];
+        vaccine1_fir_Controller.text = widget.listfromserver_mat_mo[1][21];
+        vaccine1_sec_Controller.text = widget.listfromserver_mat_mo[1][22];
+        vaccine2_fir_Controller.text = widget.listfromserver_mat_mo[1][23];
+        vaccine2_sec_Controller.text = widget.listfromserver_mat_mo[1][24];
+        vaccine3_fir_Controller.text = widget.listfromserver_mat_mo[1][25];
+        vaccine3_sec_Controller.text = widget.listfromserver_mat_mo[1][26];
+        vaccine4_fir_Controller.text = widget.listfromserver_mat_mo[1][27];
+        vaccine4_sec_Controller.text = widget.listfromserver_mat_mo[1][28];
 
-        memo_Controller.text = widget.listfromserver_mat[1][29];
+        memo_Controller.text = widget.listfromserver_mat_mo[1][29];
 
-        filename = widget.listfromserver_mat[0];
+        filename = widget.listfromserver_mat_mo[0];
       }
     }
     return Scaffold(
@@ -552,33 +535,12 @@ class MaternityPageState extends State<MaternityPage>{
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    FloatingActionButton(
-                      heroTag: 'camera',
-                      child: Icon(Icons.add_a_photo),
-                      tooltip: 'pick Image',
-                      onPressed: ()  {
 
-                        // getImage(ImageSource.camera);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => CameraOverlayMaternity()));
-                        // print("open camera");
-
-                      },
-                    ),
                     FloatingActionButton(
                       heroTag: 'gallery_button',
                       child: Icon(Icons.wallpaper),
                       tooltip: 'pick Iamge',
                       onPressed: () async{
-
-                        ImagePicker picker = ImagePicker();
-                        // galleryurl = (await picker.getImage(source: ImageSource.gallery)) as String;
-                        //galleryurl = (await ImagePicker().pickImage(source: ImageSource.gallery)) as String;
-                        galleryurl = await getImage(ImageSource.gallery);
-                        // galleryurl = (await ImagePicker.pickImage(source: ImageSource.gallery)) as String;
-                        // print("갤러리 누름");
-                        print(galleryurl);
-                        // getImage(ImageSource.gallery);
-
 
                       },
                     ),
@@ -591,28 +553,25 @@ class MaternityPageState extends State<MaternityPage>{
                         //ocr_seq = sowID1_Controller.text + "," + sowID1_Controller.text;
                         //sowID = sowID1_Controller.text + "," + sowID2_Controller.text;
                         //ocr_seq = sowID1_Controller.text + "," + sowID2_Controller.text;
-                        sow_no = sowID1_Controller.text + sowID2_Controller.text;
-                        sow_birth = birth_year_Controller.text + birth_month_Controller.text + birth_day_Controller.text;
-                        sow_buy = adoption_year_Controller.text +  adoption_month_Controller.text + adoption_day_Controller.text;
-                        sow_expectdate = expect_year_Controller.text + expect_month_Controller.text + expect_day_Controller.text;
-                        sow_givebirth = givebirth_month_Controller.text + givebirth_day_Controller.text;
+                        sow_no = sowID1_Controller.text + "," + sowID2_Controller.text;
+                        sow_birth = birth_year_Controller.text +"," + birth_month_Controller.text + "," + birth_day_Controller.text;
+                        sow_buy = adoption_year_Controller.text + "," +  adoption_month_Controller.text + "," + adoption_day_Controller.text;
+                        sow_expectdate = expect_year_Controller.text + "," + expect_month_Controller.text + "," + expect_day_Controller.text;
+                        sow_givebirth = givebirth_month_Controller.text + "," + givebirth_day_Controller.text;
                         sow_totalbaby = int.parse(totalbaby_Controller.text);
                         sow_feedbaby = int.parse(feedbaby_Controller.text);
                         sow_babyweight = int.parse(weight_Controller.text); //생시체중
                         sow_sevrerdate = teen_month_Controller.text + teen_day_Controller.text;//이유일
                         sow_sevrerqty   = int.parse(totalteen_Controller.text);//이유두수
                         sow_sevrerweight = int.parse(teenweight_Controller.text);//이유체중
-                        vaccine1 = int.parse(vaccine1_fir_Controller.text + vaccine1_sec_Controller.text);
-                        vaccine2 = int.parse(vaccine2_fir_Controller.text + vaccine2_sec_Controller.text);
-                        vaccine3 = int.parse(vaccine3_fir_Controller.text+ vaccine3_sec_Controller.text);
-                        vaccine4 = int.parse(vaccine4_fir_Controller.text + vaccine4_sec_Controller.text);
+                        vaccine1 = int.parse(vaccine1_fir_Controller.text + "," + vaccine1_sec_Controller.text);
+                        vaccine2 = int.parse(vaccine2_fir_Controller.text + "," + vaccine2_sec_Controller.text);
+                        vaccine3 = int.parse(vaccine3_fir_Controller.text + "," + vaccine3_sec_Controller.text);
+                        vaccine4 = int.parse(vaccine4_fir_Controller.text + "," + vaccine4_sec_Controller.text);
                         // "ocr_imgpath":'17',
                         memo = memo_Controller.text;
 
-                        print("sowID, ocr_seq");
-                        await maternity_insert();
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => MaternitytListPage()));
-
+                        await maternity_update();
                       },
                     ),
                   ])
@@ -623,10 +582,11 @@ class MaternityPageState extends State<MaternityPage>{
 
   }
 }
-//분만사 사진전송
-maternity_insert() async{
-  final api ='http://211.107.210.141:3000/api/ocrmaternityInsert';
+
+maternity_update() async {
+  final api ='http://211.107.210.141:3000/api/ocrmaternityUpdate';
   final data = {
+    "ocr_seq": ocr_seq,
     "sow_no": sow_no,
     "sow_birth": sow_birth,
     "sow_buy": sow_buy,
@@ -635,20 +595,20 @@ maternity_insert() async{
     "sow_totalbaby": sow_totalbaby,
     "sow_feedbaby": sow_feedbaby,
     "sow_babyweight": sow_babyweight,
-    "sow_sevrerdate": sow_sevrerdate, //이유두수
-    "sow_sevrerqty": sow_sevrerqty, //이유날
-    "sow_sevrerweight": sow_sevrerweight, //이유체중
+    "sow_sevrerdate": sow_sevrerdate,
+    "sow_sevrerqty": sow_sevrerqty,
+    "sow_sevrerweight": sow_sevrerweight,
     "vaccine1": vaccine1,
     "vaccine2": vaccine2,
     "vaccine3": vaccine3,
     "vaccine4": vaccine4,
-    "ocr_imgpath": filename,
+    // "ocr_imgpath":'14',
     "memo": memo,
   };
   final dio = Dio();
   Response response;
   response = await dio.post(api,data: data);
   if(response.statusCode == 200){
-    resultToast('Ocr 분만사 insert success... \n\n');
+    resultToast('Ocr 분만사 update success... \n\n');
   }
 }

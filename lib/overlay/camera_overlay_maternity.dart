@@ -1,32 +1,25 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter_camera_overlay/flutter_camera_overlay.dart';
 import 'package:flutter_camera_overlay/model.dart';
-import 'package:flutter_camera_overlay/overlay_shape.dart';
-import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:http_parser/http_parser.dart';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
-// import 'package:flutter/src/widgets/image.dart';
+
+import '../functions/functions.dart';
+import '../page/maternity_page.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+// import 'package:flutter_native_image/flutter_native_image.dart';
 
 
 // import 'dart:io';
 // import 'package:image/image.dart' as img;
 
 typedef XFileCallback = void Function(XFile file);
-
-late List<String> array = List.filled(35, "",growable: true);
-late List<String> array_graph = List.filled(8, "", growable: true);
-
-receiveresult(){
-  print(array);
-  return array;
-}
-
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -130,35 +123,66 @@ class CameraOverlayMaternityState extends State<CameraOverlayMaternity> {
                                 ),
                                 OutlinedButton(
                                   onPressed: () async {
+                                    var filename = file.path.split('/').last;
+                                    print(filename);
 
-                                    ImageProperties properties = await FlutterNativeImage.getImageProperties(file.path);
+                                    // ImageProperties properties = await FlutterNativeImage.getImageProperties(file.path);
+                                    // final filename = await submit_uploadimg_back(file);
 
-                                    final filename = await submit_uploadimg_back(file);
+                                    List list = await uploadimg_maternity(File(file.path));
+
+                                    GallerySaver.saveImage(file.path)
+                                        .then((value) => print('>>>> save value= $value'))
+                                        .catchError((err) {
+                                      print('error : $err');
+                                    });
 
                                     //서버로 사진 전송
-                                    final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
-                                    final dio = Dio();
-                                    Response response;
-                                    response = await dio.post(api, data: file);
-                                    if(response.statusCode == 200){
-                                      //resultToast('Ocr 임신사 insert success... \n\n');
-                                      array = receiveresult();
-                                      //_showToast(context);
-                                    }
+                                    // final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
+                                    // final dio = Dio();
+                                    // Response response;
+                                    // response = await dio.post(api, data: file);
+                                    // if(response.statusCode == 200){
+                                    //   //resultToast('Ocr 임신사 insert success... \n\n');
+                                    //   array = receiveresult();
+                                    //   //_showToast(context);
+                                    // }
 
                                     Navigator.of(context).popUntil((route) => route.isFirst);
                                     await Navigator.push(context,MaterialPageRoute(builder: (context) =>
-                                    CameraOverlayMaternity()),
+                                    MaternityPage(list)),
                                     );
                                   },
                                   child: Container(
                                       alignment: Alignment.topRight,
                                       child: const Icon(Icons.send)
-
                                   ),
                                 ),
                               ],
                             ),
+                                  actions: [
+                                  OutlinedButton(
+                                  // onPressed: () => Navigator.of(context).pop(),
+                                  //
+                                  //     Navigator.pop(context, file.path);
+                                  onPressed: () async {
+                                    final croppedfile = await cropImage(file.path);
+                                    List list = await uploadimg_maternity(File(croppedfile.path));
+
+                                    GallerySaver.saveImage(croppedfile.path)
+                                        .then((value) => print('>>>> save value= $value'))
+                                        .catchError((err) {
+                                    print('error : $err');
+                                    });
+
+                                    // pregnant_insert(list);
+                                    Navigator.of(context).popUntil((route) => route.isFirst);
+                                    await Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                    MaternityPage(list)),
+                                    );
+                                  },
+                                  child: const Icon(Icons.edit))
+                            ],
                             content: SizedBox( // 뒤로가기 버튼 만든 그 페이지 사이즈박스
                                 width: double.infinity,
                                 child: AspectRatio(
@@ -167,7 +191,7 @@ class CameraOverlayMaternityState extends State<CameraOverlayMaternity> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                         image: DecorationImage(
-                                          fit: BoxFit.fitWidth,
+                                          fit: BoxFit.fill,
                                           alignment: FractionalOffset.center,
                                           image: FileImage(
                                             File(file.path),
@@ -195,62 +219,3 @@ class CameraOverlayMaternityState extends State<CameraOverlayMaternity> {
         ));
   }
 }
-
-
-submit_uploadimg_back(dynamic file) async {
-  String filename = "no";
-  try {
-    // print("분만사 이미지 전송 함");
-    Response res = await uploading_back(file.path);
-
-    switch(res.statusCode){
-      case 200:
-        final jsonbody = res.data;       // ex) {"result":[335,"1111-11-11","2022_08_10_14_57_16.jpg"]}
-        filename = jsonbody['result'][37]; // ex) "2022_08_10_14_57_16.jpg"
-        array = jsonbody['result'];
-        print("array is ?");
-        print(array);
-        print("분만사 이미지 전송 함");
-        break;
-      case 201:
-        break;
-      case 202:
-        break;
-      default:
-        break;
-    }
-    return filename;
-  } catch (error) {
-    print("error");
-    return filename;
-  }
-}
-
-uploading_back(String imagePath) async {
-  Dio dio = new Dio();
-  try {
-    dio.options.contentType = 'multipart/form-data';
-    dio.options.maxRedirects.isFinite;
-    String fileName = imagePath.split('/').last;
-
-    print(fileName);
-    FormData _formData = FormData.fromMap({
-      "Image" : await MultipartFile.fromFile(imagePath,
-          filename: fileName, contentType:MediaType("image","jpg")),
-    });
-    Response response = await dio.post(
-        'http://211.107.210.141:3001/ocrs/uploadimg/back',
-        data:_formData
-    );
-    print(response);
-
-    final jsonBody = response.data;
-    return response;
-  } catch (e) {
-    Exception(e);
-  } finally {
-    dio.close();
-  }
-  // return 0;
-}
-

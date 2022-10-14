@@ -58,7 +58,7 @@ pregnant_selectrow(int num) async{
   }
 }
 
-submitimg(File file)async{
+uploadimg_pregnant(File file)async{
   // final api = 'http://172.17.53.63:3000/api/ocrImageUpload';
   final api ='http://211.107.210.141:3000/api/ocrImageUpload';
   final dio = Dio();
@@ -77,79 +77,96 @@ submitimg(File file)async{
       api,
       data:_formData
   );
-  // print(response.data.toString());
   return response.data;
-  //  Response response2 = await dio.get(
-  //    api2,
-  //    data:_formData
-  // );
 }
 
-//수정 후 서버 전송가 아닌 서버에서 ocr돌리고 받은 값을 수정한 insert..
-pregnant_insert(String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
-    String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
-  final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
-  final data = {
-    // "ocr_seq": ocr_seq,
-    "sow_no": sow_no,
-    "sow_birth": sow_birth,
-    "sow_buy":sow_buy,
-    "sow_estrus":sow_estrus,
-    "sow_cross":sow_cross,
-    "boar_fir":boar_fir,
-    "boar_sec":boar_sec,
-    "checkdate":checkdate,
-    "expectdate":expectdate,
-    "vaccine1":vaccine1,
-    "vaccine2":vaccine2,
-    "vaccine3":vaccine3,
-    "vaccine4":vaccine4,
-    // "ocr_imgpath":'17',
-    "memo":memo,
-  };
+uploadimg_maternity(File file)async{
+  // final api = 'http://172.17.53.63:3000/api/ocrImageUpload';
+  final api ='http://211.107.210.141:3000/api/ocrImageUpload';
   final dio = Dio();
-  Response response;
-  response = await dio.post(api,data: data);
-  print(response.data.toString());
-  print(response.data);
-  if(response.statusCode == 200){
-//resultToast('Ocr 임신사 update success... \n\n');
-    print('Ocr 임신사 update success... \n\n');
-  }
-  return 0;
+  // String fileName = file.path.split('/').last;
+
+  DateTime now = DateTime.now();
+  String fileName = now.year.toString()+now.month.toString()+now.day.toString()+now.hour.toString()+now.minute.toString()+'.jpg';
+  // final api2 = 'http://172.17.53.63:3000/api/ocrImageUpload' + fileName;
+
+  FormData _formData = FormData.fromMap({
+    "file" : await MultipartFile.fromFile(file.path,
+        filename: fileName, contentType : MediaType("image","jpg")),
+  });
+
+  Response response = await dio.post(
+      api,
+      data:_formData
+  );
+  return response.data;
 }
+
+// //수정 후 서버 전송 / pregnant_page에 있음
+// pregnant_insert(String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
+//     String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
+//   final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
+//   final data = {
+//     // "ocr_seq": ocr_seq,
+//     "sow_no": sow_no,
+//     "sow_birth": sow_birth,
+//     "sow_buy":sow_buy,
+//     "sow_estrus":sow_estrus,
+//     "sow_cross":sow_cross,
+//     "boar_fir":boar_fir,
+//     "boar_sec":boar_sec,
+//     "checkdate":checkdate,
+//     "expectdate":expectdate,
+//     "vaccine1":vaccine1,
+//     "vaccine2":vaccine2,
+//     "vaccine3":vaccine3,
+//     "vaccine4":vaccine4,
+//     // "ocr_imgpath":'17',
+//     "memo":memo,
+//   };
+//   final dio = Dio();
+//   Response response;
+//   response = await dio.post(api,data: data);
+//   print(response.data.toString());
+//   print(response.data);
+//   if(response.statusCode == 200){
+// //resultToast('Ocr 임신사 update success... \n\n');
+//     print('Ocr 임신사 insert success... \n\n');
+//   }
+//   return 0;
+// }
 
 
 
 //분만사 사진전송
-maternity_insert() async{
-  final api ='http://211.107.210.141:3000/api/ocrmaternityInsert';
-  final data = {
-    "sow_no":'2',
-    "sow_birth":'2',
-    "sow_buy":'3',
-    "sow_expectdate":'4',
-    "sow_givebirth":'5',
-    "sow_totalbaby":'6',
-    "sow_feedbaby":'7',
-    "sow_babyweight":'8',
-    "sow_sevrerdate":'9',
-    "sow_sevrerqty":'9',
-    "sow_sevrerweight":'9',
-    "vaccine1":'10',
-    "vaccine2":'11',
-    "vaccine3":'12',
-    "vaccine4":'13',
-    "ocr_imgpath":'14',
-    "memo":'16',
-  };
-  final dio = Dio();
-  Response response;
-  response = await dio.post(api,data: data);
-  if(response.statusCode == 200){
-    resultToast('Ocr 분만사 insert success... \n\n');
-  }
-}
+// maternity_insert() async{
+//   final api ='http://211.107.210.141:3000/api/ocrmaternityInsert';
+//   final data = {
+//     "sow_no":'2',
+//     "sow_birth":'2',
+//     "sow_buy":'3',
+//     "sow_expectdate":'4',
+//     "sow_givebirth":'5',
+//     "sow_totalbaby":'6',
+//     "sow_feedbaby":'7',
+//     "sow_babyweight":'8',
+//     "sow_sevrerdate":'9',
+//     "sow_sevrerqty":'9',
+//     "sow_sevrerweight":'9',
+//     "vaccine1":'10',
+//     "vaccine2":'11',
+//     "vaccine3":'12',
+//     "vaccine4":'13',
+//     "ocr_imgpath":'14',
+//     "memo":'16',
+//   };
+//   final dio = Dio();
+//   Response response;
+//   response = await dio.post(api,data: data);
+//   if(response.statusCode == 200){
+//     resultToast('Ocr 분만사 insert success... \n\n');
+//   }
+// }
 
 //분만사 전체 기록 불러오기
 maternity_getocr() async {
@@ -188,143 +205,40 @@ maternity_selectrow() async {
   }
 }
 
-//수정 후 서버로 다시 전송
-maternity_update() async {
-  final api ='http://211.107.210.141:3000/api/ocrmaternityUpdate';
+
+
+//임신사 수정 후 업데이트 //기록에 붙이기
+pregnant_update(String? ocrSeq, String? sowNo,String? sowBirth, String? sowBuy, String? sowEstrus, String? sowCross, String? boarFir, String? boarSec,
+    String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
+  final api ='http://211.107.210.141:3000/api/ocrpregnatUpdate';
   final data = {
-    "ocr_seq":'1',
-    "sow_no":'2',
-    "sow_birth":'5',
-    "sow_buy":'6',
-    "sow_expectdate":'4',
-    "sow_givebirth":'5',
-    "sow_totalbaby":'6',
-    "sow_feedbaby":'7',
-    "sow_babyweight":'8',
-    "sow_sevrerdate":'9',
-    "sow_sevrerqty":'9',
-    "sow_sevrerweight":'9',
-    "vaccine1":'10',
-    "vaccine2":'11',
-    "vaccine3":'12',
-    "vaccine4":'13',
-    // "ocr_imgpath":'14',
-    "memo":'22',
+    "ocr_seq": ocrSeq,
+    "sow_no": sowNo,
+    "sow_birth": sowBirth,
+    "sow_buy":sowBuy,
+    "sow_estrus":sowEstrus,
+    "sow_cross":sowCross,
+    "boar_fir":boarFir,
+    "boar_sec":boarSec,
+    "checkdate":checkdate,
+    "expectdate":expectdate,
+    "vaccine1":vaccine1,
+    "vaccine2":vaccine2,
+    "vaccine3":vaccine3,
+    "vaccine4":vaccine4,
+    // "ocr_imgpath":'17',
+    "memo":memo,
   };
   final dio = Dio();
   Response response;
   response = await dio.post(api,data: data);
   if(response.statusCode == 200){
-    resultToast('Ocr 분만사 update success... \n\n');
+    //resultToast('Ocr 임신사 update success... \n\n');
+    print('Ocr 임신사 update success... \n\n');
   }
+  return 0;
 }
 
-getimg(String filename) async{
-  final api ="http://172.17.66.48:4000/uploads/"+filename;
-  final dio = Dio();
-
-  Response response = await dio.get(api);
-  // if(response.statusCode == 200) {
-  //   // print(" success..."+response.data);
-  //   return "end";
-  // }else{
-  //   print(" fail..."+response.statusCode.toString());
-  // }
-  // try {
-  //   Response response = await dio.get(
-  //     api,
-  //     onReceiveProgress: showDownloadProgress,
-  //     //Received data with List<int>
-  //     options: Options(
-  //         responseType: ResponseType.bytes,
-  //         followRedirects: false,
-  //         // validateStatus: (status) { return status<500; }
-  //     ),
-  //   );
-  //   print(response.headers);
-  //   File file = File("./hi.jpg");
-  //   var raf = file.openSync(mode: FileMode.write);
-  //   // response.data is List<int> type
-  //   raf.writeFromSync(response.data);
-  //   await raf.close();
-  // } catch (e) {
-  //   print(e);
-  // }
-  // bool downloading=true;
-  // String downloadingStr="No data";
-  // double download=0.0;
-  // File f;
-  // var dir=await getApplicationDocumentsDirectory();
-  // f=File("${dir.path}/hi.jpg");
-  // String fileName=api.substring(api.lastIndexOf("/")+1);
-  // dio.download(api, "${dir.path}/$fileName",onReceiveProgress: (rec,total)
-  // {
-  // setState(() {
-  //   downloading = true;
-  //   download = (rec / total) * 100;
-  //   print(fileName);
-  //   downloadingStr = "Downloading Image : " + (download).toStringAsFixed(0);
-  // });
-  // });
-}
-
-Future<void> downloadFile() async {
-  bool downloading = false;
-
-  String progress = '0';
-
-  bool isDownloaded = false;
-
-  String uri = 'http://172.17.66.48:4000/uploads/hi.jpg'; // url of the file to be downloaded
-
-  String filename = 'hi.jpg'; // file name that you desire to keep
-
-  String savePath = await getFilePath(filename);
-
-  Dio dio = Dio();
-
-  dio.download(
-    uri,
-    savePath,
-    onReceiveProgress: (rcv, total) {
-      print(
-          'received: ${rcv.toStringAsFixed(0)} out of total: ${total
-              .toStringAsFixed(0)}');
-
-      if (progress == '100') {
-      } else if (double.parse(progress) < 100) {}
-    },
-    deleteOnError: true,
-  ).then((_) {
-
-  });
-}
-
-Future<String> getFilePath(uniqueFileName) async {
-  String path = '';
-
-  Directory dir = await getApplicationDocumentsDirectory();
-
-  path = '${dir.path}/$uniqueFileName.jpg';
-
-  return path;
-}
-
-void showDownloadProgress(received, total) {
-  if (total != -1) {
-    print((received / total * 100).toStringAsFixed(0) + "%");
-  }
-}
-// Future<String> uploadImage(File file) async {
-//   String fileName = file.path.split('/').last;
-//   FormData formData = FormData.fromMap({
-//     "file":
-//     await MultipartFile.fromFile(file.path, filename:fileName),
-//   });
-//   response = await dio.post("/info", data: formData);
-//   return response.data['id'];
-// }
-//Toast 찍기
 resultToast(String msg) {
   Fluttertoast.showToast(
       msg: msg,

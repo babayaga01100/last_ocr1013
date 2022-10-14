@@ -6,18 +6,34 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:last_ocr/overlay/camera_overlay_pregnant.dart';
-
+import 'package:last_ocr/page/Pregnant_list_page.dart';
 import '../functions/functions.dart';
 
+late int ocr_seq;
+late String sow_no;
+late String sow_birth;
+late String sow_buy;
+late String sow_estrus;
+late String sow_cross;
+late String boar_fir;
+late String boar_sec;
+late String checkdate;
+late String expectdate;
+late String vaccine1;
+late String vaccine2;
+late String vaccine3;
+late String vaccine4;
+late String memo;
+late String filename;
 
 class PregnantPage extends StatefulWidget{
   static const routeName = '/OcrPregnantPage';
 
-  const PregnantPage({Key? key, this.title}) : super(key: key);
+  // const PregnantPage({Key? key, this.title}) : super(key: key);
+  final List listfromserver_pre;
+  const PregnantPage(this.listfromserver_pre);
 
-  // const PregnantPage(List submitlist, {Key? key, this.title}) : super(key: key);
-
-  final String? title;
+  // final String? title;
 
   @override
   PregnantPageState createState() => PregnantPageState();
@@ -28,81 +44,46 @@ class PregnantPageState extends State<PregnantPage>{
   File? _image;
   final picker = ImagePicker();
 
-  late String sowID1 ='';
-  late String sowID2 ='';
-  late String sowID3 ='';
-  late String sowID4 ='';
-  late String sowID5 ='';
+  late String sowID1;
+  late String sowID2;
+  // late String sowID3 ='';
+  // late String sowID4 ='';
+  // late String sowID5 ='';
 
-  late String birth_year ='';
-  late String birth_month ='';
-  late String birth_day ='';
+  late String birth_year;
+  late String birth_month;
+  late String birth_day;
 
-  late String adoption_year ='';
-  late String adoption_month ='';
-  late String adoption_day ='';
+  late String adoption_year;
+  late String adoption_month;
+  late String adoption_day;
 
-  late String hormone_year ='';
-  late String hormone_month ='';
-  late String hormone_day ='';
+  late String hormone_year;
+  late String hormone_month;
+  late String hormone_day;
 
-  late String mate_month ='';
-  late String mate_day ='';
+  late String mate_month;
+  late String mate_day;
 
-  late String boar1ID1 ='';
-  late String boar1ID2 ='';
-  late String boar1ID3 ='';
-  late String boar1ID4 ='';
-  late String boar1ID5 ='';
+  late String boar1ID1;
+  late String boar1ID2;
+  // late String boar1ID3 ='';
+  // late String boar1ID4 ='';
+  // late String boar1ID5 ='';
 
-  late String boar2ID1 ='';
-  late String boar2ID2 ='';
-  late String boar2ID3 ='';
-  late String boar2ID4 ='';
-  late String boar2ID5 ='';
+  late String boar2ID1;
+  late String boar2ID2;
+  // late String boar2ID3 ='';
+  // late String boar2ID4 ='';
+  // late String boar2ID5 ='';
 
-  late String check_month ='';
-  late String check_day ='';
+  late String check_month;
+  late String check_day;
 
-  late String expect_month ='';
-  late String expect_day ='';
+  late String expect_month;
+  late String expect_day;
 
-  late String vaccine1_fir ='';
-  late String vaccine1_sec ='';
-
-  late String vaccine2_fir ='';
-  late String vaccine2_sec ='';
-
-  late String vaccine3_fir ='';
-  late String vaccine3_sec ='';
-
-  late String vaccine4_fir ='';
-  late String vaccine4_sec ='';
-
-  late String vaccine1 ='';
-  late String vaccine2 ='';
-  late String vaccine3 ='';
-  late String vaccine4 ='';
-
-  late String memo = '';
-
-  late String sowID = '';
-  late String title = '';
-  late String ocr_seq ='';
-  late String sow_no ='';
-  late String sow_birth = '';
-  late String sow_buy = '';
-  late String sow_estrus= '';
-  late String sow_cross= '';
-  late String boar_fir= '';
-  late String boar_sec= '';
-  late String checkdate= '';
-  late String expectdate= '';
-  //late String
-
-  String galleryurl = '';
-
-
+  late String galleryurl;
 
   Widget showImage() {
 
@@ -117,21 +98,22 @@ class PregnantPageState extends State<PregnantPage>{
             .size
             .width,
         child: Center(
-            child: Text('No image selected.')));
+            child: widget.listfromserver_pre.isEmpty ? Text('No image selected.') :  Text('image is selected.')));
   }
 
   // 비동기 처리를 통해 카메라와 갤러리에서 이미지를 가져온다.
+  // 수정필요
   Future getImage(ImageSource imageSource) async {
     final image = await picker.pickImage(source: imageSource);
 
-    // final temp = await submit_uploadimg_front(image);
+    final temp = await uploadimg_pregnant(File(image!.path));
     print("aaaa");
-    // print(temp);
+    print(temp);
 
     setState((){
-      _image = File(image!.path); // 가져온 이미지를 _image에 저장
+      _image = File(image.path); // 가져온 이미지를 _image에 저장
     });
-    // return temp;
+    return temp;
   }
 
   final sowID1_Controller = TextEditingController();
@@ -175,54 +157,67 @@ class PregnantPageState extends State<PregnantPage>{
   final memo_Controller = TextEditingController();
   final pxController = TextEditingController();
 
-
-
   @override
   Widget build(BuildContext context) {
-    array = receiveresult();
-    sowID1 = array[0];
-    sowID2 = array[1];
+    if(widget.listfromserver_pre.isNotEmpty){
+      if (sowID1_Controller.text.isEmpty) {
+        print(widget.listfromserver_pre);
+        sowID1_Controller.text = widget.listfromserver_pre[1][0];
+        sowID2_Controller.text = widget.listfromserver_pre[1][1];
+        // sowID2_Controller.text =widget.listfromserver[1][0];
+        // late String sowID3 ='';
+        // late String sowID4 ='';
+        // late String sowID5 ='';
 
-    birth_year = array[2];
-    birth_month = array[3];
-    birth_day = array[4];
+        birth_year_Controller.text = widget.listfromserver_pre[1][2];
+        birth_month_Controller.text = widget.listfromserver_pre[1][3];
+        birth_day_Controller.text = widget.listfromserver_pre[1][4];
 
-    adoption_year = array[5];
-    adoption_month = array[6];
-    adoption_day = array[7];
+        adoption_year_Controller.text = widget.listfromserver_pre[1][5];
+        adoption_month_Controller.text = widget.listfromserver_pre[1][6];
+        adoption_day_Controller.text = widget.listfromserver_pre[1][7];
 
-    hormone_year = array[8];
-    hormone_month = array[9];
-    hormone_day = array[10];
+        hormone_year_Controller.text = widget.listfromserver_pre[1][8];
+        hormone_month_Controller.text = widget.listfromserver_pre[1][9];
+        hormone_day_Controller.text = widget.listfromserver_pre[1][10];
+        // hormone_month_Controller.text =widget.listfromserver[1][8];
+        // hormone_day_Controller.text =widget.listfromserver[1][9];
 
-    mate_month = array[11];
-    mate_day = array[12];
+        mate_month_Controller.text = widget.listfromserver_pre[1][11];
+        mate_day_Controller.text = widget.listfromserver_pre[1][12];
 
-    boar1ID1 = array[13];
-    boar1ID2 = array[14];
+        boar1ID1_Controller.text = widget.listfromserver_pre[1][13];
+        boar1ID2_Controller.text = widget.listfromserver_pre[1][14];
+        // late String boar1ID3 ='';
+        // late String boar1ID4 ='';
+        // late String boar1ID5 ='';
 
-    boar2ID1 = array[15];
-    boar2ID2 = array[16];
+        boar2ID1_Controller.text = widget.listfromserver_pre[1][15];
+        boar2ID2_Controller.text = widget.listfromserver_pre[1][16];
+        // late String boar2ID3 ='';
+        // late String boar2ID4 ='';
+        // late String boar2ID5 ='';
 
-    check_month = array[17];
-    check_day = array[18];
+        check_month_Controller.text = widget.listfromserver_pre[1][17];
+        check_day_Controller.text = widget.listfromserver_pre[1][18];
 
-    expect_month = array[19];
-    expect_day = array[20];
+        expect_month_Controller.text = widget.listfromserver_pre[1][19];
+        expect_day_Controller.text = widget.listfromserver_pre[1][20];
 
-    vaccine1_fir = array[21];
-    vaccine1_sec = array[22];
+        vaccine1_fir_Controller.text = widget.listfromserver_pre[1][21];
+        vaccine1_sec_Controller.text = widget.listfromserver_pre[1][22];
+        vaccine2_fir_Controller.text = widget.listfromserver_pre[1][23];
+        vaccine2_sec_Controller.text = widget.listfromserver_pre[1][24];
+        vaccine3_fir_Controller.text = widget.listfromserver_pre[1][25];
+        vaccine3_sec_Controller.text = widget.listfromserver_pre[1][26];
+        vaccine4_fir_Controller.text = widget.listfromserver_pre[1][27];
+        vaccine4_sec_Controller.text = widget.listfromserver_pre[1][28];
 
-    vaccine2_fir = array[23];
-    vaccine2_sec = array[24];
+        memo_Controller.text = widget.listfromserver_pre[1][29];
 
-    vaccine3_fir = array[25];
-    vaccine3_sec = array[26];
-
-    vaccine4_fir = array[27];
-    vaccine4_sec = array[28];
-
-    memo = array[29];
+        filename = widget.listfromserver_pre[0];
+      }
+    }
 
     return Scaffold(
         appBar: AppBar(
@@ -520,7 +515,7 @@ class PregnantPageState extends State<PregnantPage>{
                           decoration: const InputDecoration(hintText: " "),style: TextStyle(fontSize: 20),),
                       ]),
                       Column(children:[
-                        TextField(controller: vaccine4_sec_Controller,
+                        TextField(controller: vaccine3_sec_Controller,
                           decoration: const InputDecoration(hintText: " "),style: TextStyle(fontSize: 20),),
                       ]),
                       Column(children:[
@@ -572,27 +567,24 @@ class PregnantPageState extends State<PregnantPage>{
                       heroTag: 'camera',
                       child: Icon(Icons.add_a_photo),
                       tooltip: 'pick Image',
-                      onPressed: ()  {
+                      onPressed: () async{
 
                         // getImage(ImageSource.camera);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => CameraOverlayPregnant()));
-                        // print("open camera");
 
                       },
                     ),
                     FloatingActionButton(
                       heroTag: 'gallery_button',
                       child: Icon(Icons.wallpaper),
-                      tooltip: 'pick Iamge',
+                      tooltip: 'pick Image',
                       onPressed: () async{
 
                         ImagePicker picker = ImagePicker();
                         // galleryurl = (await picker.getImage(source: ImageSource.gallery)) as String;
                         //galleryurl = (await ImagePicker().pickImage(source: ImageSource.gallery)) as String;
                         galleryurl = await getImage(ImageSource.gallery);
-                        // galleryurl = (await ImagePicker.pickImage(source: ImageSource.gallery)) as String;
-                        // print("갤러리 누름");
-                        print(galleryurl);
+
                         // getImage(ImageSource.gallery);
 
 
@@ -601,30 +593,33 @@ class PregnantPageState extends State<PregnantPage>{
                     FloatingActionButton(
                       heroTag: 'send_button',
                       child: Icon(Icons.arrow_circle_right_sharp),
-                      tooltip: 'pick Image',
+                      tooltip: 'pick Iamae',
                       onPressed: () async{
                         //_showToast(context);
-                        // sowID = sowID1_Controller.text + "," + sowID2_Controller.text;
-                        // ocr_seq = sowID1_Controller.text + "," + sowID2_Controller.text;
-                        sow_no = sowID1_Controller.text + "," + sowID2_Controller.text;
-                        sow_birth = birth_year_Controller.text +"," + birth_month_Controller.text + "," + birth_day_Controller.text;
-                        sow_buy = adoption_year_Controller.text + "," +  adoption_month_Controller.text + "," + adoption_day_Controller.text;
-                        sow_estrus = hormone_year_Controller.text + "," + hormone_month_Controller.text + "," + hormone_day_Controller.text;
-                        sow_cross =  mate_month_Controller.text + "," +mate_day_Controller.text;
-                        boar_fir = boar1ID1_Controller.text + "," + boar1ID2_Controller.text;
-                        boar_sec = boar2ID1_Controller.text + ","+boar2ID2_Controller.text;
-                        checkdate = check_month_Controller.text + "," + check_day_Controller.text;
-                        expectdate = expect_month_Controller.text+ "," + expect_day_Controller.text;
-                        vaccine1 = vaccine1_fir_Controller.text + "," + vaccine1_sec_Controller.text;
-                        vaccine2 = vaccine2_fir_Controller.text + "," + vaccine2_sec_Controller.text;
-                        vaccine3 = vaccine3_fir_Controller.text + "," + vaccine3_sec_Controller.text;
-                        vaccine4 = vaccine4_fir_Controller.text + "," + vaccine4_sec_Controller.text;
-                        // "ocr_imgpath":'17',
+                        // sowID = sowID1_Controller.text + sowID2_Controller.text;
+                        // ocr_seq = sowID1_Controller.text + "-" + sowID2_Controller.text;
+                        sow_no = sowID1_Controller.text + sowID2_Controller.text;
+                        sow_birth = birth_year_Controller.text + birth_month_Controller.text + birth_day_Controller.text;
+                        sow_buy = adoption_year_Controller.text +  adoption_month_Controller.text +adoption_day_Controller.text;
+                        sow_estrus = hormone_year_Controller.text + hormone_month_Controller.text + hormone_day_Controller.text;
+                        sow_cross =  mate_month_Controller.text + mate_day_Controller.text;
+                        boar_fir = boar1ID1_Controller.text + boar1ID2_Controller.text;
+                        boar_sec = boar2ID1_Controller.text + boar2ID2_Controller.text;
+                        checkdate = check_month_Controller.text + check_day_Controller.text;
+                        expectdate = expect_month_Controller.text + expect_day_Controller.text;
+                        vaccine1 = vaccine1_fir_Controller.text + vaccine1_sec_Controller.text;
+                        vaccine2 = vaccine2_fir_Controller.text + vaccine2_sec_Controller.text;
+                        vaccine3 = vaccine3_fir_Controller.text + vaccine3_sec_Controller.text;
+                        vaccine4 = vaccine4_fir_Controller.text + vaccine4_sec_Controller.text;                        // "ocr_imgpath":'17',
                         memo = memo_Controller.text;
 
+                        // sendData(ocr_seq, sow_no, sow_birth, sow_buy, sow_estrus, sow_cross, boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2, vaccine3, vaccine4, memo);
+                        await pregnant_insert();
 
-                        pregnant_insert(sow_no, sow_birth, sow_buy, sow_estrus, sow_cross, boar_fir, boar_sec, checkdate, expectdate, vaccine1, vaccine2, vaccine3, vaccine4, memo);
-
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                        await Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                            PregnantListPage()),
+                        );
                       },
                     ),
                   ])
@@ -636,93 +631,32 @@ class PregnantPageState extends State<PregnantPage>{
   }
 }
 
-// sendData(String? ocr_seq, String? sow_no,String? sow_birth, String? sow_buy, String? sow_estrus, String? sow_cross, String? boar_fir, String? boar_sec,
-//     String? checkdate, String? expectdate, String? vaccine1, String? vaccine2, String? vaccine3, String? vaccine4, String? memo) async {
-//   // final api ='http://172.17.53.63:3000/api/ocrpregnatInsert';
-//   final api = 'http://211.107.210.141:3000/api/ocrpregnatInsert';
-//   final data = {
-//     "ocr_seq": array[0];
-//     "sow_no": array[0],
-//     "sow_birth": array[0],
-//     "sow_buy": array[0],
-//     "sow_estrus": array[0],
-//     "sow_cross": array[0],
-//     "boar_fir": array[0],
-//     "boar_sec": array[0],
-//     "checkdate": array[0],
-//     "expectdate": array[0],
-//     "vaccine1": array[0],
-//     "vaccine2":vaccine2,
-//     "vaccine3":vaccine3,
-//     "vaccine4":vaccine4,
-//     // "ocr_imgpath":'17',
-//     "memo":memo,
-//   };
-//   final dio = Dio();
-//   Response response;
-//   response = await dio.post(api,data: data);
-//   if(response.statusCode == 200){
-//     //resultToast('Ocr 임신사 update success... \n\n');
-//     print('Ocr 임신사 update success... \n\n');
-//   }
-//   return 0;
-// }
-
-
-// class EmployeeDataSource extends DataGridSource {
-//    EmployeeDataSource(List<Employee> employees) {
-//    buildDataGridRow(employees);
-//    }
-//
-//    void buildDataGridRow(List<Employee> employeeData) {
-//    dataGridRow = employeeData.map<DataGridRow>((employee) {
-//    return DataGridRow(cells: [
-//    DataGridCell<int>(columnName: 'id', value: employee.id),
-//    DataGridCell<String>(columnName: 'name', value: employee.name),
-//    DataGridCell<String>(
-//    columnName: 'designation', value: employee.designation),
-//    const DataGridCell<Widget>(columnName: 'button', value: null),
-//    ]);
-//    }).toList();
-//    }
-//
-//    List<DataGridRow> dataGridRow = <DataGridRow>[];
-//
-//    @override
-//    List<DataGridRow> get rows => dataGridRow.isEmpty ? [] : dataGridRow;
-//
-//    @override
-//    DataGridRowAdapter? buildRow(DataGridRow row) {
-//    return DataGridRowAdapter(
-//    cells: row.getCells().map<Widget>((dataGridCell) {
-//    return Container(
-//    alignment: Alignment.center,
-//    child: dataGridCell.columnName == 'button'
-//    ? LayoutBuilder(
-//    builder: (BuildContext context, BoxConstraints constraints) {
-//   return ElevatedButton(
-//    onPressed: () {
-//    showDialog(
-//    context: context,
-//   builder: (context) => AlertDialog(
-//   content: SizedBox(
-//   height: 100,
-//   child: Column(
-//    mainAxisAlignment:
-//    MainAxisAlignment.spaceBetween,
-//    children: [
-//    Text(
-//    'Employee ID: ${row.getCells()[0].value.toString()}'),
-//    Text(
-//    'Employee Name: ${row.getCells()[1].value.toString()}'),
-//    Text(
-//    'Employee Designation: ${row.getCells()[2].value.toString()}'),
-//    ],
-//    ))));
-//    },
-//    child: const Text('Details'));
-//    })
-//    : Text(dataGridCell.value.toString()));
-//    }).toList());
-//    }
-// }
+//임신사 사진전송
+pregnant_insert() async {
+  final api ='http://211.107.210.141:3000/api/ocrpregnatInsert';
+  final data = {
+    // "ocr_seq": ocr_seq,
+    "sow_no": sow_no,
+    "sow_birth": sow_birth,
+    "sow_buy":sow_buy,
+    "sow_estrus":sow_estrus,
+    "sow_cross":sow_cross,
+    "boar_fir":boar_fir,
+    "boar_sec":boar_sec,
+    "checkdate":checkdate,
+    "expectdate":expectdate,
+    "vaccine1":vaccine1,
+    "vaccine2":vaccine2,
+    "vaccine3":vaccine3,
+    "vaccine4":vaccine4,
+    "ocr_imgpath": filename,
+    "memo":memo,
+  };
+  print(data);
+  final dio = Dio();
+  Response response;
+  response = await dio.post(api,data: data);
+  if(response.statusCode == 200){
+    resultToast('Ocr 임신사 insert success… \n\n');
+  }
+}

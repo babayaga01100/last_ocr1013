@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   OutlinedButton(
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => PregnantPage()));
+                            builder: (context) => PregnantPage([])));
                       },
                       child: const Text('OCR')
                   ),
@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     OutlinedButton(
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => MaternityPage()));
+                              builder: (context) => MaternityPage([])));
                         },
                         child: const Text('OCR')
                     ),

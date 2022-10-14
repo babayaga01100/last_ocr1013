@@ -59,7 +59,7 @@ dependencies:
   toast: ^0.2.9
   get_rx: ^3.13.0
   grouped_list: ^5.1.2
-
+  gallery_saver: ^2.0.1
 
 dev_dependencies:
   flutter_test:
